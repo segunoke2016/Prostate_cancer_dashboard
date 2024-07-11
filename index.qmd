@@ -1,5 +1,5 @@
 ---
-title: "Final"
+title: "Prostate Cancer for new cases"
 format: 
     dashboard:
       embed-resources: true
