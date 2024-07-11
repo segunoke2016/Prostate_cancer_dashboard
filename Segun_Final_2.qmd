@@ -1,0 +1,452 @@
+---
+title: "Final"
+format: 
+    dashboard:
+      embed-resources: true
+theme: lux
+---
+
+
+
+```{r}
+# Load packages 
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse, 
+               here,
+               sf,
+               bslib, 
+               bsicons,
+               rnaturalearth, 
+               plotly, 
+               countrycode, 
+               htmltools, 
+               reactable,
+               janitor,
+               visdat,
+               gapminder
+               )
+```
+
+
+
+```{r}
+prostate_cancer<- read_csv("prostate_cancer_new_cases_per_100000_men.csv")
+
+```
+
+
+```{r}
+#breast_cancer<- #read_csv("breast_cancer_new_cases_per_100000_women.csv")
+```
+
+```{r}
+prostate_cancer2<- prostate_cancer %>% 
+                select(-c(2:38))
+```
+
+
+```{r}
+prostate_cancer2 %>% reactable(pagination = FALSE)
+
+```
+
+```{r}
+#breast_cancer2 <- breast_cancer %>% 
+#                  select(-c(2:38))
+```
+
+```{r}
+# Create visdat plot of new_hiv_raw
+#vis_dat(prostate_cancer2)
+
+```
+
+```{r}
+# Create visdat plot of new_hiv_raw
+#vis_dat(breast_cancer2)
+
+```
+
+```{r}
+#names(breast_cancer2)
+```
+
+```{r}
+#prostate_cancer2 %>% 
+  #rename("1990_newcases" = "1990")
+```
+
+
+```{r}
+rename_columns <- function(df) {
+  colnames(df) <- colnames(df) %>%
+    sapply(function(x) if (x %in% 1990:2019) paste0(x, "_newcases") else x)
+  return(df)
+}
+
+# Example dataframe
+# prostate_cancer <- read_csv("prostate_cancer_new_cases_per_100000_men.csv")
+# breast_cancer <- read_csv("breast_cancer_new_cases_per_100000_women.csv")
+
+# Renaming columns in prostate cancer data
+prostate_cancer2 <- rename_columns(prostate_cancer2)
+```
+
+
+```{r}
+prostate_cancer2_clean<- prostate_cancer2 %>%
+     pivot_longer(cols = 2:31,
+                   names_to = c("year", ".value"),
+                   names_sep = "_")
+#prostate_cancer2_clean
+#write.csv(prostrate_cancer2_clean, file = "pc_2.csv")
+```
+
+
+```{r}
+#rename_columns <- function(df) {
+ # colnames(df) <- colnames(df) %>%
+  #  sapply(function(x) if (x %in% 1990:2019) paste0(x, "_newcases") else x)
+ # return(df)
+#}
+
+# Example dataframe
+# prostate_cancer <- read_csv("prostate_cancer_new_cases_per_100000_men.csv")
+# breast_cancer <- read_csv("breast_cancer_new_cases_per_100000_women.csv")
+
+# Renaming columns in prostate cancer data
+#breast_cancer2 <- rename_columns(breast_cancer2)
+```
+
+
+
+```{r}
+#breast_cancer2_clean<- breast_cancer2 %>%
+ #    pivot_longer(cols = 2:31,
+  #                 names_to = c("year", ".value"),
+  #                 names_sep = "_")
+#breast_cancer2_clean
+```
+
+
+```{r}
+
+pop <- tidyr::population
+
+#pop
+#unique(pop$country)
+#write.csv(pop, file = "pop.csv")
+#getwd()
+```
+
+```{r}
+#setdiff(prostate_cancer2_clean$country, pop$country)
+```
+
+```{r}
+#setdiff(pop$country, prostate_cancer2_clean$country)
+```
+
+
+```{r}
+prostate_cancer2_clean_2 <- prostate_cancer2_clean %>% 
+  mutate(country =
+           case_when(  country == "UAE"  ~  "United Arab Emirates", 
+                       country == "Brunei" ~ "Brunei Darussalam" ,
+                        country == "Bolivia"  ~  "Bolivia (Plurinational State of)", 
+                         country ==  "Cote d'Ivoire" ~ "Côte d'Ivoire",
+                     
+                           country == "Congo, Dem. Rep." ~ "Democratic Republic of the Congo"  ,
+                      country ==  "Congo, Rep."   ~   "Congo" , 
+                         country ==  "Cook Is" ~  "Cook Islands",
+                     
+                        country == "Cape Verde" ~  "Cabo Verde" ,
+                        country == "Micronesia, Fed. Sts."  ~  "Micronesia (Federated States of)", 
+                         country ==  "UK" ~ "United Kingdom of Great Britain and Northern Ireland",
+                     
+                        country == "Hong Kong, China" ~ "China, Hong Kong SAR",
+                        country == "Iran"   ~  "Iran (Islamic Republic of)", 
+                         country ==  "Kyrgyz Republic"  ~ "Kyrgyzstan" ,
+                     
+                        country == "St. Kitts and Nevis"  ~ "Saint Kitts and Nevis" ,
+                        country == "South Korea"  ~ "Republic of Korea" , 
+                         country ==    "Lao" ~ "Lao People's Democratic Republic" ,
+                     
+                        country == "St. Lucia"~ "Saint Lucia"  ,
+                        country == "Moldova"   ~  "Republic of Moldova" , 
+                         country ==   "North Macedonia" ~ "The Former Yugoslav Republic of Macedonia" ,
+                     
+                       country == "North Korea" ~ "Democratic People's Republic of Korea" ,
+                       country ==  "Russia"  ~   "Russian Federation" , 
+                         country ==  "Serbia and Montenegro"  ~  "Serbia & Montenegro" ,
+                     
+                        country ==  "Slovak Republic"  ~  "Slovakia"  ,
+                        country == "Eswatini"  ~  "Swaziland" , 
+                        country ==  "Syria" ~  "Syrian Arab Republic" ,
+                     
+                        country ==  "Tanzania"  ~ "United Republic of Tanzania",
+                        country ==  "USA"    ~  "United States of America" , 
+                        country ==   "St. Vincent and the Grenadines" ~ "Saint Vincent and the Grenadines",
+                     
+                     
+                        country == "Venezuela"  ~ "Venezuela (Bolivarian Republic of)" ,
+                        country == "Virgin Islands (U.S.)"   ~  "US Virgin Islands" , 
+                         country == "Vietnam" ~ "Viet Nam",
+                     
+                       country == "Palestine" ~ "West Bank and Gaza Strip",
+                        #country == "Bolivia"  ~  "Bolivia (Plurinational State of)", 
+                        # country ==  "Cote d'Ivoire" ~ "Côte d'Ivoire",
+                     
+                     
+                     
+                     TRUE ~   country))
+
+#setdiff(pop $  country, prostrate_cancer2_clean$  country)
+#setdiff(prostrate_cancer2_clean$  country, pop $  country) 
+#prostate_cancer2_clean_2
+```
+
+```{r}
+p <- prostate_cancer2_clean_2 %>% ggplot(aes(x=fct_reorder(country,newcases),
+                         y=newcases))+
+  geom_col(fill="darkblue")+
+  coord_flip()+
+  theme_classic()+
+  labs(title = "Total prostate cancer newcases",
+       x = "Country",
+       y = "New Cases")
+
+```
+
+
+
+
+
+# HOME
+
+## Row 1 {height=25%}
+
+```{r visualize-data}
+plot_top20 <- prostate_cancer2_clean_2 %>% 
+  filter(year == "2010") %>% 
+  arrange(newcases) %>% 
+  head(20) %>% 
+  ggplot(final_dataset,
+         mapping = aes(x = fct_reorder(country, newcases), y = newcases))+
+  geom_col(aes(fill = country))+
+  coord_flip()+
+  labs(title = "Countries with the most total prostate cancer  newcases in 2010", x = "Country", y = "Total number of newcases")+
+  theme(legend.position = "none")
+plot_top20
+  
+```
+
+
+
+
+```{r}
+#prostrate_cancer_07 <- prostrate_cancer2_clean 
+  
+
+ # unique(prostrate_cancer_07$country)
+  
+# prostrate_cancer_07 $country <- ifelse(prostrate_cancer_07$country == "USA", "United States of America", prostrate_cancer_07$country)
+```
+
+```{r}
+# Check column names
+colnames(pop)
+colnames(prostate_cancer2_clean_2)
+
+# Assuming both datasets have 'country' and 'year' columns
+merged_data <- merge(pop, prostate_cancer2_clean_2, by = c("country", "year"))
+
+# Verify the merge
+#head(merged_data)
+
+```
+
+```{r}
+gg <- gapminder::gapminder %>% 
+ ggplot(aes(x = gdpPercap, y = lifeExp, color = continent, frame = year)) +
+ geom_point() +
+ scale_x_log10() +
+ theme_minimal()
+
+ggplotly(gg)
+```
+
+
+
+
+
+# HOME
+
+
+## Row 1 {height = 25%}
+
+
+
+
+
+
+
+
+```{r}
+pro_07 <- merged_data %>% 
+  filter(year == 2007)
+
+highest_newcases_country <- 
+ pro_07 %>% 
+  arrange(-newcases) %>% 
+  head(1) %>% 
+  pull(country)
+
+highest_newcases_value <- 
+  pro_07 %>% 
+  arrange(-newcases) %>% 
+  head(1) %>% 
+  pull(newcases) %>% 
+  round(1)
+
+lowest_newcases_country <- 
+  pro_07 %>% 
+  arrange(newcases) %>% 
+  head(1) %>% 
+  pull(country)
+
+lowest_newcases_value <- 
+  pro_07 %>% 
+  arrange(newcases) %>% 
+  head(1) %>% 
+  pull(newcases) %>% 
+  round(1)
+
+average_newcases_value <- 
+  pro_07 %>% 
+  summarise(
+    weighted_mean = sum(newcases * population)/ sum(population)
+    ) %>% 
+  round(1)
+
+```
+
+
+
+```{r}
+country_shapes <- rnaturalearth::ne_countries()
+
+
+pro_08<- 
+  pro_07 %>% 
+  mutate(
+    country_code = countrycode(country, 
+                               "country.name", 
+                               "iso3c"))
+
+gap_map <- 
+  left_join(country_shapes, pro_08, 
+          by = c("adm0_a3" = "country_code")) %>% 
+  mutate(tooltip_label = paste(country, 
+                               round(newcases, 1), 
+                               sep = ": ")) %>% 
+  ggplot() + 
+  geom_sf(aes(fill = newcases, text = tooltip_label)) + 
+  theme_void()+ 
+  theme(legend.position = "none")
+
+gap_map_ggplotly <- ggplotly(gap_map, tooltip = "text")
+
+gap_map_ggplotly
+
+```
+
+
+```{r}
+value_box(
+  title = "Highest Newcases",
+  value = highest_newcases_value,
+  showcase = bsicons::bs_icon("heart"),
+  theme = value_box_theme(bg = "#518fd6"),
+  p(paste0("(", highest_newcases_country, ")"))
+)
+```
+
+```{r}
+value_box(
+  title = "Lowest Newcases",
+  value = lowest_newcases_value,
+  showcase = bsicons::bs_icon("thermometer"),
+  theme = value_box_theme(bg = "#214773"),
+  p(paste0("(", lowest_newcases_country, ")"))
+)
+```
+```{r}
+value_box(
+  title = "Average Newcases",
+  value = average_newcases_value,
+  showcase = bsicons::bs_icon("graph-up"),
+  theme = value_box_theme(bg = "#3f71ab")
+)
+```
+
+
+## Row 2 {height=75%}
+
+### {width=70%}
+
+```{r title = "Map of Countries by Life Expectancy"}
+gap_map_ggplotly
+```
+
+
+
+### {width=30%}
+
+```{r title = "Top 20 Countries by Life Expectancy"}
+#top_20_countries_ggplotly
+```
+
+
+
+
+# DOWNLOAD DATA
+
+The data used in this dashboard is shown below and can be downloaded as a CSV. 
+
+```{r}
+library(htmltools)
+
+htmltools::browsable(
+  tagList(
+    reactable(gapminder, 
+              elementId = "gapminder-table", 
+              searchable = T, 
+              filterable = T), 
+    
+tags$button("Download as CSV", 
+            onclick = "Reactable.downloadDataCSV('gapminder-table')")
+  )
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
